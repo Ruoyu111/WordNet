@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.HashSet;
+
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
@@ -7,10 +10,9 @@ import edu.princeton.cs.algs4.StdOut;
 public class SAP {
     
     private final Digraph digraph;
-    // record length of ancestral path for each pair of vertices
-    private final int[][] lens;
-    // record ancestor for each pair of vertices
-    private final int[][] ancs;
+    
+    // software cache of recently computed length() and ancestor() queries
+    private final HashMap<HashSet<Integer>, Integer[]> cache;
     
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
@@ -23,33 +25,27 @@ public class SAP {
         // to make the data type SAP immutable
         digraph = new Digraph(G);
         
-        lens = new int[digraph.V()][digraph.V()];
-        ancs = new int[digraph.V()][digraph.V()];
-        
-        for (int i = 0; i < digraph.V(); i++) {
-            for (int j = 0; j < digraph.V(); j++) {
-                if (i == j) {
-                    lens[i][j] = 0;
-                    ancs[i][j] = i;
-                } else {
-                    // let -2 means initial value, not compute yet
-                    lens[i][j] = -2;
-                    ancs[i][j] = -2;
-                }
-            }
-        }
+        cache = new HashMap<>();
     }
     
     // length of shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         sap(v, w);
-        return lens[v][w];
+        HashSet<Integer> key = new HashSet<>();
+        key.add(v);
+        key.add(w);
+        Integer[] value = cache.get(key);
+        return value[0];
     }
     
     // a common ancestor of v and w that participates in an shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         sap(v, w);
-        return ancs[v][w];
+        HashSet<Integer> key = new HashSet<>();
+        key.add(v);
+        key.add(w);
+        Integer[] value = cache.get(key);
+        return value[1];
     }
     
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
@@ -66,7 +62,9 @@ public class SAP {
     private void sap(int v, int w) {
         validateVertex(v);
         validateVertex(w);
-        if (lens[v][w] != -2) return;
+        
+        // check cache
+        if (cache.containsKey(new Integer[] {v, w})) return;
         
         // bfs from v
         BreadthFirstDirectedPaths vPath = new BreadthFirstDirectedPaths(digraph, v);
@@ -88,19 +86,16 @@ public class SAP {
             }
         }
         
-        if (distance != Integer.MAX_VALUE) {
-            // update
-            lens[v][w] = distance;
-            lens[w][v] = distance;
-            ancs[v][w] = ancestor;
-            ancs[w][v] = ancestor;
-        } else {
+        if (distance == Integer.MAX_VALUE) {
             // which means no such path
-            lens[v][w] = -1;
-            lens[w][v] = -1;
-            ancs[v][w] = -1;
-            ancs[w][v] = -1;
+            distance = -1;
+            ancestor = -1;
         }
+        HashSet<Integer> key = new HashSet<>();
+        key.add(v);
+        key.add(w);
+        Integer[] value = new Integer[] {distance, ancestor};
+        cache.put(key, value);
     }
     
     private int[] sap(Iterable<Integer> v, Iterable<Integer> w) {

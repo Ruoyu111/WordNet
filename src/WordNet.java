@@ -25,8 +25,17 @@ public class WordNet {
         // check that the input does correspond to a rooted DAG
         DirectedCycle dc = new DirectedCycle(wordNet);
         if (dc.hasCycle())
-            throw new IllegalArgumentException("Input does not correspond to a rooted DAG.");
+            throw new IllegalArgumentException("Input has cycle.");
         sap = new SAP(wordNet);
+
+        // check that the input is single rooted
+        // which means there is one and only one vertex has zero out degree
+        int rootNum = 0;
+        for (int v = 0; v < count; v++)
+            if (wordNet.outdegree(v) == 0)
+                rootNum++;
+        if (rootNum != 1)
+            throw new IllegalArgumentException("Input has " + rootNum + " roots.");
     }
 
     // returns all WordNet nouns
@@ -36,6 +45,8 @@ public class WordNet {
 
     // is the word a WordNet noun?
     public boolean isNoun(String word) {
+        if (word == null)
+            throw new IllegalArgumentException("Input is null.");
         return synMap.containsKey(word);
     }
 
@@ -110,10 +121,10 @@ public class WordNet {
         if (!synMap.containsKey(noun))
             throw new IllegalArgumentException("Noun is not in wordNet");
     }
-    
+
     // Unit test
-//    public static void main(String[] args) {
-//        
-//    }
+    // public static void main(String[] args) {
+    //
+    // }
 
 }

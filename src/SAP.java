@@ -12,7 +12,7 @@ public class SAP {
     private final Digraph digraph;
 
     // software cache of recently computed length() and ancestor() queries
-    private final HashMap<HashSet<Integer>, Integer[]> cache;
+    private final HashMap<HashSet<Integer>, int[]> cache;
 
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
@@ -34,7 +34,7 @@ public class SAP {
         HashSet<Integer> key = new HashSet<>();
         key.add(v);
         key.add(w);
-        Integer[] value = cache.get(key);
+        int[] value = cache.get(key);
         return value[0];
     }
 
@@ -45,7 +45,7 @@ public class SAP {
         HashSet<Integer> key = new HashSet<>();
         key.add(v);
         key.add(w);
-        Integer[] value = cache.get(key);
+        int[] value = cache.get(key);
         return value[1];
     }
 
@@ -100,7 +100,7 @@ public class SAP {
             ancestor = -1;
         }
 
-        Integer[] value = new Integer[] { distance, ancestor };
+        int[] value = new int[] { distance, ancestor };
         cache.put(key, value);
     }
 
@@ -137,9 +137,9 @@ public class SAP {
 
     // throw an IllegalArgumentException unless {@code 0 <= v < V}
     private void validateVertex(int v) {
-        int V = digraph.V();
-        if (v < 0 || v >= V)
-            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
+        int n = digraph.V();
+        if (v < 0 || v >= n)
+            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (n - 1));
     }
 
     // throw an IllegalArgumentException unless {@code 0 <= v < V}
@@ -147,10 +147,10 @@ public class SAP {
         if (vertices == null) {
             throw new IllegalArgumentException("argument is null");
         }
-        int V = digraph.V();
+        int n = digraph.V();
         for (int v : vertices) {
-            if (v < 0 || v >= V) {
-                throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
+            if (v < 0 || v >= n) {
+                throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (n - 1));
             }
         }
     }

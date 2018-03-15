@@ -110,9 +110,10 @@ public class WordNet {
         if (!synMap.containsKey(noun))
             throw new IllegalArgumentException("Noun is not in wordNet");
     }
-
-    public static void main(String[] args) {
-
-    }
+    
+    // Unit test
+//    public static void main(String[] args) {
+//        
+//    }
 
 }

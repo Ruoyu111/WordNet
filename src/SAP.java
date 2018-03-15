@@ -1,10 +1,11 @@
 import java.util.HashMap;
 import java.util.HashSet;
 
-import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 
 public class SAP {
 
@@ -65,8 +66,12 @@ public class SAP {
         validateVertex(v);
         validateVertex(w);
 
+        HashSet<Integer> key = new HashSet<>();
+        key.add(v);
+        key.add(w);
+
         // check cache
-        if (cache.containsKey(new Integer[] { v, w }))
+        if (cache.containsKey(key))
             return;
 
         // bfs from v
@@ -94,9 +99,7 @@ public class SAP {
             distance = -1;
             ancestor = -1;
         }
-        HashSet<Integer> key = new HashSet<>();
-        key.add(v);
-        key.add(w);
+
         Integer[] value = new Integer[] { distance, ancestor };
         cache.put(key, value);
     }
@@ -154,29 +157,15 @@ public class SAP {
 
     // do unit testing of this class
     public static void main(String[] args) {
-        In in = new In("C:\\Users\\rchen\\eclipse-workspace\\WordNet\\test\\digraph1.txt");
+        In in = new In(args[0]);
         Digraph G = new Digraph(in);
         SAP sap = new SAP(G);
-        Bag<Integer> v = new Bag<>();
-        v.add(3);
-        v.add(9);
-        v.add(7);
-
-        Bag<Integer> w = new Bag<>();
-        w.add(11);
-        w.add(12);
-        w.add(2);
-
-        System.out.println("length: 3 -- 11: " + sap.length(3, 11));
-        System.out.println("ancestor: 3 -- 11: " + sap.ancestor(3, 11));
-        System.out.println("length: 3 -- 12: " + sap.length(3, 12));
-        System.out.println("ancestor: 3 -- 12: " + sap.ancestor(3, 12));
-        System.out.println("length: 9 -- 11: " + sap.length(9, 11));
-        System.out.println("ancestor: 9 -- 11: " + sap.ancestor(9, 11));
-        System.out.println("length: 9 -- 12: " + sap.length(9, 12));
-        System.out.println("ancestor: 9 -- 12: " + sap.ancestor(9, 12));
-
-        System.out.println("Length: " + sap.length(v, w));
-        System.out.println("Ancestor: " + sap.ancestor(v, w));
+        while (!StdIn.isEmpty()) {
+            int v = StdIn.readInt();
+            int w = StdIn.readInt();
+            int length = sap.length(v, w);
+            int ancestor = sap.ancestor(v, w);
+            StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
+        }
     }
 }
